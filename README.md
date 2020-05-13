@@ -11,3 +11,5 @@ Team Profile Generator
 * build html renderer
 * check outputs on htmls 
 * test more on command line(npm run test)
+
+* 

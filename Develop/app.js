@@ -10,9 +10,48 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
-
+const employees= []
+init()
+function init(){
+makeEmployee()
+}
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
+async function makeEmployee() {
+    const answers = await inquirer.prompt([
+        {
+           
+            message: "type something",
+            name: "something",
+            type: "input"
+        },
+        {
+            when: answers=>answers.something=="something awesome",
+            message: "that was awesome",
+            name: "awesome",
+            type: 'input'
+        }
+    ])
+    console.log(answers)
+    //do something with answers- make a new Employee (of whate3ver subclass) and push it into the employees array
+    //ask the user if they want to do it again: if so , call makeEmployee
+    
+    doAgain()
+
+}
+async function doAgain(){
+    let again = await inquirer.prompt
+    if (again){
+        return makeEmployee()
+    }else{
+        finish()
+    }
+}
+
+function finish(){
+    let html= render(employees)
+    fs.writeFile(html)
+}
 
 // After the user has input all employees desired, call the `render` function (required
 // above) and pass in an array containing all employee objects; the `render` function will
