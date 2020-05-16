@@ -15,11 +15,11 @@ const employees = [];
 init()
 function init() {
     console.log("Create Your Team")
-    makeEmployee()
+    makeManager()
 }
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
-async function makeEmployee() {
+async function makeManager() {
     const answers = await inquirer.prompt([
         {
             message: "What is your manager's name?",
@@ -29,7 +29,7 @@ async function makeEmployee() {
                 if (value !== "") {
                     return true;
                 } else {
-                    return /[a-z]/("Please enter atleast one letter");
+                    return ("Please enter at least one letter")
                 }
             }
         },
@@ -38,11 +38,10 @@ async function makeEmployee() {
             name: "managerid",
             type: "input",
             validate: value => {
-                if (value) {
+                if (!isNaN(value) || value > 0) {
                     return true;
-                } else if (isNaN(value) || value === 0 || value < 0) {
-                    alert("Please enter a valid number")
-                    return false;
+                } else {
+                    return ("Please enter a valid number")
                 }
             }
         },
@@ -50,26 +49,43 @@ async function makeEmployee() {
             message: "What is your manager's email?",
             name: "manageremail",
             type: "input",
-            
+            validate: value => {
+                emailValidator(value)
+            },
         },
         {
             message: "What is your manager's office number?",
             name: "managernumber",
             type: "input",
             validate: value => {
-                if (value >= 0) {
+                if (value !== "") {
                     return true;
                 } else {
-                    return "Please enter a number other than 0";
+                    return "Please enter a valid phone number";
                 }
             }
         },
         {
-            when: answers => answers.something == "something awesome",
-            message: "that was awesome",
-            name: "awesome",
-            type: 'input'
-        }
+            message: "Which type of team member would you like to add?",
+            name: "employeetype",
+            type: "list",
+            choices: [
+                "Engineer",
+                "Intern",
+                "I dont want to add any more employees."
+            ],
+            validate: value => {
+                if (value == "Engineer") {
+                    return makeEngineer();
+                } else if (value == "Intern") {
+                    return makeIntern();
+                } else {
+                    return finish();
+                }
+
+            }
+        },
+
     ])
     console.log(answers)
     //do something with answers- make a new Employee (of whatever subclass) and push it into the employees array
@@ -78,10 +94,23 @@ async function makeEmployee() {
     // doAgain()
 
 }
+
+
+function emailValidator(value) {
+    const mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (value === mailformat) {
+        return true;
+    }
+    else {
+        return ("You have entered an invalid email address!");
+    }
+}
+
+
 async function doAgain() {
     let again = await inquirer.prompt
     if (again) {
-        return makeEmployee()
+        return makeManager()
     } else {
         finish()
     }
@@ -89,7 +118,7 @@ async function doAgain() {
 
 function finish() {
     let html = render(employees)
-    fs.writeFile(html)
+    fs.writeFile(html);
 }
 
 // After the user has input all employees desired, call the `render` function (required
@@ -110,4 +139,4 @@ function finish() {
 // and Intern classes should all extend from a class named Employee; see the directions
 // for further information. Be sure to test out each class and verify it generates an
 // object with the correct structure and methods. This structure will be crucial in order
-// for the provided `render` function to work! ```
+// for the provided `render` function to work! 
