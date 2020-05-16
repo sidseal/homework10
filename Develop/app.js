@@ -38,10 +38,11 @@ async function makeEmployee() {
             name: "managerid",
             type: "input",
             validate: value => {
-                if (value > 0){ 
+                if (value) {
                     return true;
-                } else {
-                    return "Please enter a number other than 0";
+                } else if (isNaN(value) || value === 0 || value < 0) {
+                    alert("Please enter a valid number")
+                    return false;
                 }
             }
         },
@@ -49,11 +50,17 @@ async function makeEmployee() {
             message: "What is your manager's email?",
             name: "manageremail",
             type: "input",
-            validate: value =>{
-                if (value === "''@something.com"){
+            
+        },
+        {
+            message: "What is your manager's office number?",
+            name: "managernumber",
+            type: "input",
+            validate: value => {
+                if (value >= 0) {
                     return true;
                 } else {
-                    return "Please enter a valid email address";
+                    return "Please enter a number other than 0";
                 }
             }
         },
@@ -65,7 +72,7 @@ async function makeEmployee() {
         }
     ])
     console.log(answers)
-    //do something with answers- make a new Employee (of whate3ver subclass) and push it into the employees array
+    //do something with answers- make a new Employee (of whatever subclass) and push it into the employees array
     //ask the user if they want to do it again: if so , call makeEmployee
 
     // doAgain()
