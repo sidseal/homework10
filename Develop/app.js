@@ -10,24 +10,55 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
-const employees= [];
+const employees = [];
 
 init()
-function init(){
-makeEmployee()
+function init() {
+    console.log("Create Your Team")
+    makeEmployee()
 }
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
 async function makeEmployee() {
     const answers = await inquirer.prompt([
         {
-           
-            message: "type something",
-            name: "something",
-            type: "input"
+            message: "What is your manager's name?",
+            name: "managername",
+            type: "input",
+            validate: value => {
+                if (value !== "") {
+                    return true;
+                } else {
+                    return /[a-z]/("Please enter atleast one letter");
+                }
+            }
         },
         {
-            when: answers=>answers.something=="something awesome",
+            message: "What is your manager's id?",
+            name: "managerid",
+            type: "input",
+            validate: value => {
+                if (value > 0){ 
+                    return true;
+                } else {
+                    return "Please enter a number other than 0";
+                }
+            }
+        },
+        {
+            message: "What is your manager's email?",
+            name: "manageremail",
+            type: "input",
+            validate: value =>{
+                if (value === "''@something.com"){
+                    return true;
+                } else {
+                    return "Please enter a valid email address";
+                }
+            }
+        },
+        {
+            when: answers => answers.something == "something awesome",
             message: "that was awesome",
             name: "awesome",
             type: 'input'
@@ -36,21 +67,21 @@ async function makeEmployee() {
     console.log(answers)
     //do something with answers- make a new Employee (of whate3ver subclass) and push it into the employees array
     //ask the user if they want to do it again: if so , call makeEmployee
-    
-    doAgain()
+
+    // doAgain()
 
 }
-async function doAgain(){
+async function doAgain() {
     let again = await inquirer.prompt
-    if (again){
+    if (again) {
         return makeEmployee()
-    }else{
+    } else {
         finish()
     }
 }
 
-function finish(){
-    let html= render(employees)
+function finish() {
+    let html = render(employees)
     fs.writeFile(html)
 }
 

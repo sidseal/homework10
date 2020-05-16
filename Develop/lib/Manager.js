@@ -16,10 +16,10 @@ class Manager extends Employee {
 
 }
 
-const manager = new Manager("sid","1","blahblah@ymail.com","123-456-7890")
+// const manager = new Manager("sid","1","blahblah@ymail.com","123-456-7890")
 
-console.log(manager.getOfficeNumber())
-console.log(manager.getRole())
+// console.log(manager.getOfficeNumber())
+// console.log(manager.getRole())
 
 
 
