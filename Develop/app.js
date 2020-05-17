@@ -13,17 +13,17 @@ const render = require("./lib/htmlRenderer");
 const employees = [];
 
 init()
-function init() {
+function init() {  
     console.log("Create Your Team")
-    makeManager()
+    checkTypeOfEmp()
+    // makeManager()
 }
-// Write code to use inquirer to gather information about the development team members,
-// and to create objects for each team member (using the correct classes as blueprints!)
-async function makeManager() {
-    const answers = await inquirer.prompt([
+
+function makeManager() {
+    const answers = inquirer.prompt([
         {
             message: "What is your manager's name?",
-            name: "managername",
+            name: "name",
             type: "input",
             validate: value => {
                 if (value !== "") {
@@ -35,7 +35,7 @@ async function makeManager() {
         },
         {
             message: "What is your manager's id?",
-            name: "managerid",
+            name: "id",
             type: "input",
             validate: value => {
                 if (!isNaN(value) || value > 0) {
@@ -47,15 +47,13 @@ async function makeManager() {
         },
         {
             message: "What is your manager's email?",
-            name: "manageremail",
+            name: "email",
             type: "input",
-            validate: value => {
-                emailValidator(value)
-            },
+            validate: emailValidator
         },
         {
             message: "What is your manager's office number?",
-            name: "managernumber",
+            name: "office",
             type: "input",
             validate: value => {
                 if (value !== "") {
@@ -65,40 +63,158 @@ async function makeManager() {
                 }
             }
         },
-        {
-            message: "Which type of team member would you like to add?",
-            name: "employeetype",
-            type: "list",
-            choices: [
-                "Engineer",
-                "Intern",
-                "I dont want to add any more employees."
-            ],
-            validate: value => {
-                if (value == "Engineer") {
-                    return makeEngineer();
-                } else if (value == "Intern") {
-                    return makeIntern();
-                } else {
-                    return finish();
-                }
 
+    ]).then(function (answers) {
+            const manager = new Manager(answers.name, answers.id, answers.email, answers.office);
+            employees.push(manager);
+            checkTypeOfEmp();
+        })
+        .catch(function (err) {
+            console.log(err);
+        })
+
+};
+
+function checkTypeOfEmp () {
+    inquirer.prompt ([
+        {
+            type: "list",
+            name: "next",
+            message: "Which type of employee would you like to add?",
+            choices: ["Manager","Engineer", "Intern", "I don't want to enter another employee"]
+        }
+    ])
+    .then(function(ans){
+        switch (ans.next) {
+            case "Manager":
+                makeManager();
+                break;
+            case "Engineer":
+                makeEngineer();
+                break;
+            case "Intern":
+                makeIntern();
+                break;
+            default: finish()
+        }
+    })
+    .catch(function(err){
+        console.log(err);
+    })
+};
+
+function makeEngineer() {
+    const answers = inquirer.prompt([
+        {
+            message: "What is your Engineer's name?",
+            name: "name",
+            type: "input",
+            validate: value => {
+                if (value !== "") {
+                    return true;
+                } else {
+                    return ("Please enter at least one letter")
+                }
+            }
+        },
+        {
+            message: "What is your Engineer's id?",
+            name: "id",
+            type: "input",
+            validate: value => {
+                if (!isNaN(value) || value > 0) {
+                    return true;
+                } else {
+                    return ("Please enter a valid number")
+                }
+            }
+        },
+        {
+            message: "What is your Engineer's email?",
+            name: "email",
+            type: "input",
+            validate: emailValidator
+        },
+        {
+            message: "What is your Engineer's Github username?",
+            name: "github",
+            type: "input",
+            validate: value => {
+                if (value!=="") {
+                    return true;
+                } else {
+                    return ("Please enter a valid username")
+                }
             }
         },
 
-    ])
-    console.log(answers)
-    //do something with answers- make a new Employee (of whatever subclass) and push it into the employees array
-    //ask the user if they want to do it again: if so , call makeEmployee
-
-    // doAgain()
-
+    ]).then(function (answers) {
+        const engineer = new Engineer(answers.name, answers.id, answers.email, answers.github);
+        employees.push(engineer);
+        checkTypeOfEmp();
+    })
+        .catch(function (err) {
+            console.log(err);
+        })
+}
+function makeIntern() {
+    const answers = inquirer.prompt([
+        {
+            message: "What is your Intern's name?",
+            name: "name",
+            type: "input",
+            validate: value => {
+                if (value !== "") {
+                    return true;
+                } else {
+                    return ("Please enter at least one letter")
+                }
+            }
+        },
+        {
+            message: "What is your Intern's id?",
+            name: "id",
+            type: "input",
+            validate: value => {
+                if (!isNaN(value) || value > 0) {
+                    return true;
+                } else {
+                    return ("Please enter a valid number")
+                }
+            }
+        },
+        {
+            message: "What is your Intern's email?",
+            name: "email",
+            type: "input",
+            validate: emailValidator
+        },
+        {
+            message: "What school is your intern from?",
+            name: "school",
+            type: "input",
+            validate: value => {
+                if (value !== "") {
+                    return true;
+                } else {
+                    return ("Please enter a valid School name")
+                }
+            }
+        },
+    ]).then(function (answers) {
+        const intern = new Intern(answers.name, answers.id, answers.email, answers.school);
+        employees.push(intern);
+        checkTypeOfEmp();
+    })
+        .catch(function (err) {
+            console.log(err);
+        })
 }
 
 
 function emailValidator(value) {
     const mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-    if (value === mailformat) {
+    if (value !== mailformat) {
         return true;
     }
     else {
@@ -106,37 +222,14 @@ function emailValidator(value) {
     }
 }
 
-
-async function doAgain() {
-    let again = await inquirer.prompt
-    if (again) {
-        return makeManager()
-    } else {
-        finish()
-    }
-}
-
 function finish() {
     let html = render(employees)
-    fs.writeFile(html);
+    fs.writeFile(outputPath, html, function (err) {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log("The file has been written");
+        }
+    }
+    )
 }
-
-// After the user has input all employees desired, call the `render` function (required
-// above) and pass in an array containing all employee objects; the `render` function will
-// generate and return a block of HTML including templated divs for each employee!
-
-// After you have your html, you're now ready to create an HTML file using the HTML
-// returned from the `render` function. Now write it to a file named `team.html` in the
-// `output` folder. You can use the variable `outputPath` above target this location.
-// Hint: you may need to check if the `output` folder exists and create it if it
-// does not.
-
-// HINT: each employee type (manager, engineer, or intern) has slightly different
-// information; write your code to ask different questions via inquirer depending on
-// employee type.
-
-// HINT: make sure to build out your classes first! Remember that your Manager, Engineer,
-// and Intern classes should all extend from a class named Employee; see the directions
-// for further information. Be sure to test out each class and verify it generates an
-// object with the correct structure and methods. This structure will be crucial in order
-// for the provided `render` function to work! 
